@@ -1,9 +1,3 @@
-// 获取当前路径信息
-const currentPath = window.location.pathname;
-const currentOrigin = window.location.origin;
-// 正确获取当前目录
-const currentDir = currentPath.substring(0, currentPath.lastIndexOf('/') + 1) || '/';
-
 fetch("/navbar/navbar.json")
   .then(res => res.json())
   .then(renderNavbar)
@@ -20,34 +14,15 @@ function renderNavbar(data) {
   });
 
   initBehavior();
-  disableCurrentPathLinks();
 }
 
 function createMenuItem(item) {
-  // 检查是否为外部链接
-  const isExternalLink = item.link && (
-    item.link.startsWith('http://') ||
-    item.link.startsWith('https://') ||
-    item.link.startsWith('//')
-  );
-
   // 如果是链接（无论是否有子菜单）
   if (item.link) {
     const el = document.createElement("a");
     el.className = "menu-item";
     el.href = item.link;
     el.textContent = item.label;
-
-    // 只检查同域链接是否为当前路径，且不是 # 链接
-    if (!isExternalLink && item.link !== '#' && isCurrentPath(item.link)) {
-      el.classList.add("current-page");
-      el.href = "javascript:void(0)";
-      el.setAttribute("aria-disabled", "true");
-      el.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      });
-    }
 
     // 处理子菜单（如果有）
     if (item.children) {
@@ -58,12 +33,9 @@ function createMenuItem(item) {
 
       const dropdown = document.createElement("div");
       dropdown.className = "dropdown";
-      
-      // 递归创建子菜单项
       item.children.forEach(child => {
         dropdown.appendChild(createMenuItem(child));
       });
-      
       el.appendChild(dropdown);
     }
 
@@ -82,12 +54,9 @@ function createMenuItem(item) {
 
       const dropdown = document.createElement("div");
       dropdown.className = "dropdown";
-      
-      // 递归创建子菜单项
       item.children.forEach(child => {
         dropdown.appendChild(createMenuItem(child));
       });
-      
       el.appendChild(dropdown);
     }
 
@@ -95,57 +64,22 @@ function createMenuItem(item) {
   }
 }
 
-// 修复：正确处理相对路径，避免重复拼接
-function isCurrentPath(linkPath) {
-  try {
-    // 排除 # 链接
-    if (linkPath === '#') return false;
-    
-    // 外部链接直接排除
-    if (linkPath.startsWith('http://') || 
-        linkPath.startsWith('https://') || 
-        linkPath.startsWith('//')) {
-      const linkUrl = new URL(linkPath);
-      if (linkUrl.origin !== currentOrigin) return false;
-      linkPath = linkUrl.pathname;
-    } 
-    // 绝对路径（以/开头）直接使用
-    else if (linkPath.startsWith('/')) {
-      // 无需处理
-    } 
-    // 相对路径：基于当前目录解析
-    else {
-      linkPath = new URL(linkPath, currentOrigin + currentDir).pathname;
-    }
-
-    // 标准化路径（去除尾部斜杠）
-    const normalizePath = (path) => path.replace(/\/$/, '') || '/';
-    const normalizedLinkPath = normalizePath(linkPath);
-    const normalizedCurrentPath = normalizePath(currentPath);
-    
-    // 调试信息
-    console.log('Comparing:', normalizedLinkPath, 'with', normalizedCurrentPath);
-    
-    return normalizedLinkPath === normalizedCurrentPath;
-  } catch (e) {
-    console.warn("Invalid link path:", linkPath);
-    return false;
-  }
-}
-
 function initBehavior() {
   const hamburger = document.getElementById("hamburger");
   const menu = document.getElementById("menu");
 
+  // 汉堡菜单
   hamburger.addEventListener("click", e => {
     e.stopPropagation();
     menu.classList.toggle("open");
   });
 
+  // 移动端逻辑
   if (window.innerWidth <= 768) {
     setupMobileMenu();
   }
 
+  // 窗口大小改变时重新初始化
   window.addEventListener("resize", () => {
     if (window.innerWidth <= 768) {
       setupMobileMenu();
@@ -154,6 +88,7 @@ function initBehavior() {
     }
   });
 
+  // 点击页面其他地方关闭菜单
   document.addEventListener("click", e => {
     if (window.innerWidth <= 768 && !menu.contains(e.target)) {
       menu.classList.remove("open");
@@ -174,14 +109,8 @@ function setupMobileMenu() {
 }
 
 function handleMobileClick(e) {
-  // 如果是当前页面的链接，直接阻止
-  if (this.tagName === "A" && this.classList.contains("current-page")) {
-    e.preventDefault();
-    e.stopPropagation();
-    return;
-  }
-
-  if (this.tagName === "A") return; // 普通链接直接跳转
+  // 普通链接直接跳转
+  if (this.tagName === "A") return;
 
   e.stopPropagation();
 
@@ -221,28 +150,4 @@ function closeAllDropdowns() {
       d.style.display = "none";
     });
   });
-}
-
-// 强制样式注入
-function disableCurrentPathLinks() {
-  const style = document.createElement("style");
-  style.textContent = `
-    .menu-item.current-page {
-      color: #999 !important;
-      cursor: default !important;
-      pointer-events: none !important;
-      opacity: 0.7;
-      text-decoration: none !important;
-    }
-    .menu-item.current-page:hover {
-      background: transparent !important;
-      color: #999 !important;
-    }
-    @media (min-width: 769px) {
-      .menu-item.current-page:hover {
-        color: #999 !important;
-      }
-    }
-  `;
-  document.head.appendChild(style);
 }
