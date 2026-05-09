@@ -11,15 +11,9 @@
     {
       "label": "项目",
       "children":[
-        {
-          "label": "[hot]大家都爱用的",
-          "children": [
-            {"label": "无", "link":"#"}
-          ]
-        },
          {"label": "小工具",
           "children":[
-            {"label":"编辑器", "link":"/tools/editer.html"}
+            {"label":"编辑器", "link":"/tools/editor.html"}
           ]
         },
         {
@@ -36,7 +30,7 @@
         {"label": "shenyouchu.cn", "link": "https://shenyouchu.cn"}
       ]
     },
-    {"label":"GitHub页面源代码", "link":"https://github.com/Tourism-LinYaOVO/Tourism-LinYaOVO.github.io"}
+    {"label":"GitHub页面源代码", "link":"https://github.com/Tourism-LinYaOVO/TourCN-website"}
   ]
 }
 
