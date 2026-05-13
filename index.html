@@ -1,59 +1,157 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <link rel="icon" href="/favicon.png" type="image/png">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TourCN·你会喜欢用的项目</title>
-
-  <link rel="stylesheet" href="/navbar/styles.css" />
-  <style>
-    .homepage {
-      min-height: calc(90vh - 60px);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 40px 24px;
-    }
-
-    .homepage h1 {
-      font-size: 36px;
-      font-weight: 600;
-      color: #222;
-      margin-bottom: 12px;
-    }
-
-    .homepage p {
-      font-size: 16px;
-      color: #666;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TouriCNの引导页</title>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+/* ===== 基础 ===== */
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Ma Shan Zheng', cursive;
+  color:#fff;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+/* ===== 背景 ===== */
+.bg {
+  position:fixed; inset:0;
+  background:url('https://site-file.shenyouchu.cn/pc.jpg') center/cover no-repeat;
+  filter:brightness(.5);
+  z-index:-1;
+}
+/* ===== 主体 ===== */
+.main {
+  max-width:1100px;
+  margin:0 auto;
+  padding:40px 20px;
+}
+/* ===== 头像 ===== */
+.avatar-wrap { text-align:center; margin-bottom:40px; }
+.avatar {
+  width:150px; height:150px;
+  border-radius:50%;
+  border:4px solid rgba(255,255,255,.3);
+  animation:float 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-15px); }
+}
+/* ===== 头像下方文字 ===== */
+.avatar-text { margin-top:20px; }
+.avatar-text h1 { font-size:36px; margin-bottom:8px; }
+.avatar-text p { font-size:16px; opacity:0.8; line-height:1.6; }
+/* ===== 链接卡片 ===== */
+.links {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+  gap:20px;
+  margin-bottom:40px;
+}
+.card {
+  display:flex;
+  align-items:center;
+  background:rgba(255,255,255,.1);
+  backdrop-filter:blur(10px);
+  border-radius:20px;
+  padding:15px;
+  text-decoration:none;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.15);
+  transition:.3s;
+}
+.card:hover {
+  transform:scale(1.05);
+  background:rgba(255,255,255,.2);
+}
+.card img {
+  width:48px; height:48px;
+  border-radius:50%;
+  margin-right:15px;
+}
+.card h3 { font-size:18px; margin-bottom:4px; }
+.card p { font-size:14px; opacity:.8; }
+/* ===== 运行时长 ===== */
+.runtime {
+  text-align:center;
+  margin-top:20px;
+  font-size:14px;
+}
+.runtime span {
+  color:#FFB7C5;
+  font-weight:bold;
+}
+/* ===== 页脚 ===== */
+.footer {
+  text-align:center;
+  font-size:14px;
+  opacity:.8;
+  line-height:1.8;
+  margin-top:60px;
+  padding-bottom:20px;
+}
+</style>
 </head>
 <body>
-  <nav class="navbar" id="navbar">
-    <div class="logo">
-      <img id="logo-img" src="" alt="Logo" />
-      <span id="logo-text"></span>
+<div class="bg"></div>
+<div class="main">
+  <!-- 头像 + 文字 -->
+  <div class="avatar-wrap">
+    <img class="avatar" src="/favicon.png">
+    <div class="avatar-text">
+      <h1>TouriCNの项目站</h1>
+      <p>你现在在引导页<br>分享一些有趣的项目</p>
     </div>
-
-    <div class="menu" id="menu"></div>
-
-    <div class="hamburger" id="hamburger">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  </nav>
-
-  <main class="homepage">
-    <h1>你想要的小项目</h1>
-    <p>这里有你会有需要的项目，或者是你的刚需
-    <br>包含各个分类，怎么用都用得上
-    <br>(请使用菜单栏来打开项目。)</p>
-  </main>
-  
-  <script src="/navbar/script.js"></script>
+  </div>
+  <!-- 动态链接卡片 -->
+  <div class="links" id="links-container"></div>
+  <!-- 运行时长 -->
+  <div class="runtime" id="runtime"></div>
+  <!-- 页脚 -->
+  <div class="footer">
+    <p>Tips:该页面模仿了<a href="https://shenyouchu.cn">沈幼楚的引导页</a>作为样式参考</p>
+  </div>
+</div>
+<script>
+/* ===== 运行时长 ===== */
+const START_TIME = new Date('2026-05-01T00:00:00Z').getTime();
+function updateRuntime() {
+  const diff = Date.now() - START_TIME;
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('runtime').innerHTML =
+    `本站已运行 <span>${d}</span> 天 <span>${h}</span> 时 <span>${m}</span> 分 <span>${s}</span> 秒`;
+}
+updateRuntime();
+setInterval(updateRuntime, 1000);
+/* ===== 动态加载链接卡片 ===== */
+fetch('./links.json')
+  .then(res => res.json())
+  .then(links => {
+    const container = document.getElementById('links-container');
+    links.forEach(link => {
+      const card = document.createElement('a');
+      card.className = 'card';
+      card.href = link.url;
+      card.target = '_blank';
+      card.innerHTML = `
+        <img src="${link.icon}" alt="${link.title}">
+        <div>
+          <h3>${link.title}</h3>
+          <p>${link.desc}</p>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  })
+  .catch(err => {
+    console.error('加载链接失败:', err);
+    document.getElementById('links-container').innerHTML = '<p style="color:#ffb7c5;text-align:center;">链接加载失败～</p>';
+  });
+</script>
 </body>
 </html>
