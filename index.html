@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TouriCNの主页</title>
+<title>TouriCNの站点</title>
+
+<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<!-- Marked.js (专业 Markdown 解析) -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <style>
 /* ===== 基础 ===== */
@@ -46,11 +50,6 @@ body {
 .avatar-text h1 { font-size:28px; margin-bottom:5px; }
 .avatar-text p { font-size:14px; opacity:0.8; }
 
-/* ===== 菜单区域 ===== */
-.menu-container {
-  margin-top: 30px;
-}
-
 /* ===== 分类标题 ===== */
 .category-title {
   font-size: 22px;
@@ -60,49 +59,77 @@ body {
   border-bottom: 1px solid rgba(255,255,255,0.2);
   color: #FFB7C5;
 }
-
-/* ===== 菜单项 ===== */
-.menu-item {
-  padding: 12px 15px;
-  margin-bottom: 8px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s;
-  border: 1px solid transparent;
-}
-.menu-item:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: rgba(255,255,255,0.2);
-}
-.menu-item.active {
-  background: rgba(255,183,197,0.2);
-  border-color: #FFB7C5;
+/* 子分类标题（小一号） */
+.sub-category-title {
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: rgba(255,255,255,0.9);
+  padding-left: 10px;
+  border-left: 3px solid #FFB7C5;
 }
 
-/* ===== 文档内容区域（直接在菜单下方） ===== */
+/* ===== 文档内容区域（核心） ===== */
 .doc-content {
   margin-top: 15px;
-  padding: 20px;
-  background: rgba(0,0,0,0.3);
-  border-radius: 12px;
+  padding: 25px;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
   border: 1px solid rgba(255,255,255,0.1);
-  display: none; /* 默认隐藏 */
-}
-.doc-content.show {
-  display: block;
-}
-.doc-content h2 {
-  color: #FFB7C5;
-  margin-bottom: 15px;
-  font-size: 20px;
-}
-.doc-content-body {
-  line-height: 1.8;
+  line-height: 1.9; /* 阅读舒适度 */
+  font-size: 15px;
   color: rgba(255,255,255,0.85);
 }
-.doc-content-body strong {
-  color: #fff;
+.doc-content h1, .doc-content h2, .doc-content h3 {
+  color: #FFB7C5;
+  margin: 20px 0 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.doc-content h1 { font-size: 24px; }
+.doc-content h2 { font-size: 20px; }
+.doc-content h3 { font-size: 18px; }
+
+/* 代码块 */
+.doc-content pre {
+  background: rgba(0,0,0,0.5);
+  padding: 15px;
+  border-radius: 10px;
+  overflow-x: auto;
+  border: 1px solid rgba(255,255,255,0.1);
+  margin: 15px 0;
+}
+.doc-content code {
+  font-family: 'Consolas', monospace;
+  background: rgba(255,255,255,0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #FFB7C5;
+}
+/* 引用 */
+.doc-content blockquote {
+  border-left: 4px solid #FFB7C5;
+  padding-left: 15px;
+  margin: 15px 0;
+  color: rgba(255,255,255,0.6);
+}
+/* 列表 */
+.doc-content ul, .doc-content ol {
+  padding-left: 20px;
+}
+/* 表格 */
+.doc-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+.doc-content th, .doc-content td {
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 8px 12px;
+}
+.doc-content th {
+  background: rgba(255,183,197,0.1);
 }
 
 /* ===== 链接卡片 ===== */
@@ -163,21 +190,21 @@ body {
 <div class="bg"></div>
 
 <div class="main">
-  <!-- 头像 -->
+  <!-- 1. 头像 -->
   <div class="avatar-wrap">
     <img class="avatar" src="/favicon.png">
     <div class="avatar-text">
       <h1>TouriCNの站点</h1>
-      <p>你现在在主页<br>分享一些有趣的东西</p>
+      <p>分享一些有趣的东西</p>
     </div>
   </div>
 
-  <!-- 菜单区域 -->
+  <!-- 2. 分类与内容区域 -->
   <div class="menu-container" id="menu-container">
-    <!-- JS 会在这里生成菜单和文档内容 -->
+    <!-- JS 会在这里直接生成分类和内容 -->
   </div>
 
-  <!-- 底部信息 -->
+  <!-- 3. 底部信息 -->
   <div class="footer-info">
     <div class="runtime" id="runtime"></div>
     <div class="footer">
@@ -205,27 +232,29 @@ setInterval(updateRuntime, 1000);
 fetch('./data.json')
   .then(res => res.json())
   .then(categories => {
-    const menu = document.getElementById('menu-container');
+    const container = document.getElementById('menu-container');
     
     categories.forEach(cat => {
       
-      // 情况1：大分类本身就是文档
+      // 情况1：大分类本身就是文档（直接显示，不折叠）
       if (cat.file) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'menu-wrapper';
+        const section = document.createElement('div');
+        section.className = 'category-section';
         
-        const item = document.createElement('div');
-        item.className = 'menu-item';
-        item.textContent = cat.category;
-        item.onclick = () => toggleDoc(wrapper, cat.file, cat.category);
+        const title = document.createElement('div');
+        title.className = 'category-title';
+        title.textContent = cat.category;
         
         const docArea = document.createElement('div');
         docArea.className = 'doc-content';
         docArea.id = `doc-${cat.category}`;
         
-        wrapper.appendChild(item);
-        wrapper.appendChild(docArea);
-        menu.appendChild(wrapper);
+        section.appendChild(title);
+        section.appendChild(docArea);
+        container.appendChild(section);
+        
+        // 直接加载文档
+        loadDoc(docArea, cat.file);
         return;
       }
 
@@ -233,26 +262,28 @@ fetch('./data.json')
       const title = document.createElement('div');
       title.className = 'category-title';
       title.textContent = cat.category;
-      menu.appendChild(title);
+      container.appendChild(title);
 
       // 子分类（文档）
       if (cat.subCategories) {
         cat.subCategories.forEach(sub => {
-          const wrapper = document.createElement('div');
-          wrapper.className = 'menu-wrapper';
+          const section = document.createElement('div');
+          section.className = 'sub-category-section';
           
-          const item = document.createElement('div');
-          item.className = 'menu-item';
-          item.textContent = sub.subCategory;
-          item.onclick = () => toggleDoc(wrapper, sub.file, sub.subCategory);
+          const subTitle = document.createElement('div');
+          subTitle.className = 'sub-category-title';
+          subTitle.textContent = sub.subCategory;
           
           const docArea = document.createElement('div');
           docArea.className = 'doc-content';
           docArea.id = `doc-${sub.subCategory}`;
           
-          wrapper.appendChild(item);
-          wrapper.appendChild(docArea);
-          menu.appendChild(wrapper);
+          section.appendChild(subTitle);
+          section.appendChild(docArea);
+          container.appendChild(section);
+          
+          // 直接加载文档
+          loadDoc(docArea, sub.file);
         });
       }
 
@@ -274,53 +305,23 @@ fetch('./data.json')
           `;
           wrap.appendChild(card);
         });
-        menu.appendChild(wrap);
+        container.appendChild(wrap);
       }
     });
   });
 
-/* ===== 切换文档显示 ===== */
-function toggleDoc(wrapper, file, title) {
-  const item = wrapper.querySelector('.menu-item');
-  const docArea = wrapper.querySelector('.doc-content');
-  
-  // 如果已经打开，则关闭
-  if (docArea.classList.contains('show')) {
-    docArea.classList.remove('show');
-    item.classList.remove('active');
-    return;
-  }
-  
-  // 关闭其他打开的文档
-  document.querySelectorAll('.doc-content.show').forEach(el => {
-    el.classList.remove('show');
-    el.previousElementSibling.classList.remove('active');
-  });
-  
-  // 打开当前文档
-  item.classList.add('active');
-  docArea.classList.add('show');
-  
-  // 加载内容
-  loadDoc(docArea, file, title);
-}
-
-/* ===== 加载文档 ===== */
-function loadDoc(container, file, title) {
-  container.innerHTML = `<h2>${title}</h2><div class="doc-content-body">加载中...</div>`;
+/* ===== 加载文档（使用 marked.js 完美适配） ===== */
+function loadDoc(container, file) {
+  container.innerHTML = `<p>加载中...</p>`;
   
   fetch(file)
     .then(res => res.ok ? res.text() : Promise.reject('文件未找到'))
-    .then(md => {
-      container.innerHTML = `
-        <h2>${title}</h2>
-        <div class="doc-content-body">
-          ${md.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}
-        </div>
-      `;
+    .then(markdown => {
+      // 使用 marked 解析 Markdown 为 HTML
+      container.innerHTML = marked.parse(markdown);
     })
     .catch(err => {
-      container.innerHTML = `<h2>${title}</h2><div class="doc-content-body" style="color:#ff6b6b;">加载失败：${err}</div>`;
+      container.innerHTML = `<p style="color:#ff6b6b;">加载失败：${err}</p>`;
     });
 }
 </script>
