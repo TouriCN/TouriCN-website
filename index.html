@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TouriCNの项目站</title>
+<title>TouriCNの主页</title>
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 
 <style>
@@ -23,19 +23,11 @@ body {
   filter:brightness(.5);
   z-index:-1;
 }
-/* ===== 主体布局 ===== */
+/* ===== 主体 ===== */
 .main {
-  max-width:1200px;
+  max-width:900px;
   margin:0 auto;
   padding:40px 20px;
-  display: flex;
-  gap: 30px;
-}
-/* ===== 左侧边栏 ===== */
-.sidebar {
-  flex: 0 0 280px; /* 稍微收窄，避免挤压右侧 */
-  display: flex;
-  flex-direction: column;
 }
 /* ===== 头像 ===== */
 .avatar-wrap { text-align:center; margin-bottom:30px; }
@@ -54,10 +46,9 @@ body {
 .avatar-text h1 { font-size:28px; margin-bottom:5px; }
 .avatar-text p { font-size:14px; opacity:0.8; }
 
-/* ===== 菜单区域（头像紧下方） ===== */
+/* ===== 菜单区域 ===== */
 .menu-container {
-  flex-grow: 1;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 /* ===== 分类标题 ===== */
@@ -69,6 +60,7 @@ body {
   border-bottom: 1px solid rgba(255,255,255,0.2);
   color: #FFB7C5;
 }
+
 /* ===== 菜单项 ===== */
 .menu-item {
   padding: 12px 15px;
@@ -86,6 +78,31 @@ body {
 .menu-item.active {
   background: rgba(255,183,197,0.2);
   border-color: #FFB7C5;
+}
+
+/* ===== 文档内容区域（直接在菜单下方） ===== */
+.doc-content {
+  margin-top: 15px;
+  padding: 20px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: none; /* 默认隐藏 */
+}
+.doc-content.show {
+  display: block;
+}
+.doc-content h2 {
+  color: #FFB7C5;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+.doc-content-body {
+  line-height: 1.8;
+  color: rgba(255,255,255,0.85);
+}
+.doc-content-body strong {
+  color: #fff;
 }
 
 /* ===== 链接卡片 ===== */
@@ -119,33 +136,9 @@ body {
 .card h3 { font-size:18px; margin-bottom:4px; }
 .card p { font-size:14px; opacity:.8; }
 
-/* ===== 右侧文档区 ===== */
-.content {
-  flex: 1;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 30px;
-  min-height: 500px;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.content h2 {
-  color: #FFB7C5;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-}
-.content-body {
-  line-height: 1.8;
-  color: rgba(255,255,255,0.85);
-}
-.content-body strong {
-  color: #fff;
-}
-
 /* ===== 底部信息 ===== */
 .footer-info {
-  margin-top: 30px;
+  margin-top: 40px;
   padding-top: 20px;
   border-top: 1px solid rgba(255,255,255,0.1);
 }
@@ -170,36 +163,25 @@ body {
 <div class="bg"></div>
 
 <div class="main">
-  <!-- 左侧边栏 -->
-  <div class="sidebar">
-    <!-- 1. 头像 -->
-    <div class="avatar-wrap">
-      <img class="avatar" src="/favicon.png">
-      <div class="avatar-text">
-        <h1>TouriCNの项目站</h1>
-        <p>你现在在引导页<br>分享一些有趣的项目</p>
-      </div>
-    </div>
-
-    <!-- 2. 分类菜单（紧挨着头像下方） -->
-    <div class="menu-container" id="menu-container">
-      <!-- JS 会在这里生成分类 -->
-    </div>
-
-    <!-- 3. 底部信息 -->
-    <div class="footer-info">
-      <div class="runtime" id="runtime"></div>
-      <div class="footer">
-        <p>Tips:该页面模仿了<a href="https://shenyouchu.cn" style="color:#FFB7C5;">沈幼楚的引导页</a>作为样式参考</p>
-      </div>
+  <!-- 头像 -->
+  <div class="avatar-wrap">
+    <img class="avatar" src="/favicon.png">
+    <div class="avatar-text">
+      <h1>TouriCNの站点</h1>
+      <p>你现在在主页<br>分享一些有趣的东西</p>
     </div>
   </div>
 
-  <!-- 右侧文档显示区 -->
-  <div class="content" id="doc-content">
-    <h2>欢迎</h2>
-    <div class="content-body">
-      点击左侧菜单查看内容。
+  <!-- 菜单区域 -->
+  <div class="menu-container" id="menu-container">
+    <!-- JS 会在这里生成菜单和文档内容 -->
+  </div>
+
+  <!-- 底部信息 -->
+  <div class="footer-info">
+    <div class="runtime" id="runtime"></div>
+    <div class="footer">
+      <p>Tips:该页面模仿了<a href="https://shenyouchu.cn" style="color:#FFB7C5;">沈幼楚的引导页</a>作为样式参考</p>
     </div>
   </div>
 </div>
@@ -226,16 +208,24 @@ fetch('./data.json')
     const menu = document.getElementById('menu-container');
     
     categories.forEach(cat => {
+      
       // 情况1：大分类本身就是文档
       if (cat.file) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'menu-wrapper';
+        
         const item = document.createElement('div');
         item.className = 'menu-item';
         item.textContent = cat.category;
-        item.onclick = () => {
-          setActive(item);
-          loadDoc(cat.file, cat.category);
-        };
-        menu.appendChild(item);
+        item.onclick = () => toggleDoc(wrapper, cat.file, cat.category);
+        
+        const docArea = document.createElement('div');
+        docArea.className = 'doc-content';
+        docArea.id = `doc-${cat.category}`;
+        
+        wrapper.appendChild(item);
+        wrapper.appendChild(docArea);
+        menu.appendChild(wrapper);
         return;
       }
 
@@ -248,14 +238,21 @@ fetch('./data.json')
       // 子分类（文档）
       if (cat.subCategories) {
         cat.subCategories.forEach(sub => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'menu-wrapper';
+          
           const item = document.createElement('div');
           item.className = 'menu-item';
           item.textContent = sub.subCategory;
-          item.onclick = () => {
-            setActive(item);
-            loadDoc(sub.file, sub.subCategory);
-          };
-          menu.appendChild(item);
+          item.onclick = () => toggleDoc(wrapper, sub.file, sub.subCategory);
+          
+          const docArea = document.createElement('div');
+          docArea.className = 'doc-content';
+          docArea.id = `doc-${sub.subCategory}`;
+          
+          wrapper.appendChild(item);
+          wrapper.appendChild(docArea);
+          menu.appendChild(wrapper);
         });
       }
 
@@ -282,29 +279,48 @@ fetch('./data.json')
     });
   });
 
-/* ===== 高亮当前选中 ===== */
-function setActive(el) {
-  document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-  el.classList.add('active');
+/* ===== 切换文档显示 ===== */
+function toggleDoc(wrapper, file, title) {
+  const item = wrapper.querySelector('.menu-item');
+  const docArea = wrapper.querySelector('.doc-content');
+  
+  // 如果已经打开，则关闭
+  if (docArea.classList.contains('show')) {
+    docArea.classList.remove('show');
+    item.classList.remove('active');
+    return;
+  }
+  
+  // 关闭其他打开的文档
+  document.querySelectorAll('.doc-content.show').forEach(el => {
+    el.classList.remove('show');
+    el.previousElementSibling.classList.remove('active');
+  });
+  
+  // 打开当前文档
+  item.classList.add('active');
+  docArea.classList.add('show');
+  
+  // 加载内容
+  loadDoc(docArea, file, title);
 }
 
 /* ===== 加载文档 ===== */
-function loadDoc(file, title) {
-  const area = document.getElementById('doc-content');
-  area.innerHTML = `<h2>${title}</h2><div class="content-body">加载中...</div>`;
+function loadDoc(container, file, title) {
+  container.innerHTML = `<h2>${title}</h2><div class="doc-content-body">加载中...</div>`;
   
   fetch(file)
     .then(res => res.ok ? res.text() : Promise.reject('文件未找到'))
     .then(md => {
-      area.innerHTML = `
+      container.innerHTML = `
         <h2>${title}</h2>
-        <div class="content-body">
+        <div class="doc-content-body">
           ${md.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}
         </div>
       `;
     })
     .catch(err => {
-      area.innerHTML = `<h2>${title}</h2><div class="content-body" style="color:#ff6b6b;">加载失败：${err}</div>`;
+      container.innerHTML = `<h2>${title}</h2><div class="doc-content-body" style="color:#ff6b6b;">加载失败：${err}</div>`;
     });
 }
 </script>
