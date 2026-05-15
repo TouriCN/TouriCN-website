@@ -17,6 +17,15 @@
       }
     ]
   },
+  {"category":"友谊链接",
+    "items": [
+      {
+        "type": "link",
+        "icon": "https://www.travellings.cn/assets/travelling-dark.png",
+        "title": "开往|Travelling",
+        "desc":"开往，来一场说走就走的网上旅行",
+        "url": "https://www.travellings.cn/go.html"
+      },
   {
     "category":"关于我/About me",
     "file": "post/about.md"
