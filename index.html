@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
+<link rel="icon" href="/favicon.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>TouriCNの站点</title>
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
@@ -57,10 +58,10 @@ body {
 }
 .tab-item {
   padding: 10px 20px;
-  border-radius: 12px; /* 圆角，非胶囊 */
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s;
-  background: rgba(255,255,255,0.08); /* 默认半透明背景 */
+  background: rgba(255,255,255,0.08);
   color: rgba(255,255,255,0.7);
 }
 .tab-item:hover {
@@ -68,7 +69,7 @@ body {
   color: #fff;
 }
 .tab-item.active {
-  background: #FFB7C5; /* 选中时粉色实心 */
+  background: #FFB7C5;
   color: #1a1a2e;
   font-weight: bold;
   box-shadow: 0 4px 15px rgba(255,183,197,0.3);
@@ -86,6 +87,42 @@ body {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* ===== 混合容器 ===== */
+.mixed-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ===== 链接卡片 ===== */
+.links {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+  gap:15px;
+}
+.card {
+  display:flex;
+  align-items:center;
+  background:rgba(255,255,255,.1);
+  backdrop-filter:blur(10px);
+  border-radius:20px;
+  padding:15px;
+  text-decoration:none;
+  color:#fff;
+  transition:.3s;
+}
+.card:hover {
+  transform:scale(1.05);
+  background:rgba(255,255,255,.2);
+}
+.card img {
+  width:48px; height:48px;
+  border-radius:50%;
+  margin-right:15px;
+}
+.card h3 { font-size:18px; margin-bottom:4px; }
+.card p { font-size:14px; opacity:.8; }
 
 /* ===== 文档样式 ===== */
 .doc-content {
@@ -120,35 +157,6 @@ body {
   margin: 15px 0;
   color: rgba(255,255,255,0.6);
 }
-
-/* ===== 链接卡片 ===== */
-.links {
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
-  gap:15px;
-}
-.card {
-  display:flex;
-  align-items:center;
-  background:rgba(255,255,255,.1);
-  backdrop-filter:blur(10px);
-  border-radius:20px;
-  padding:15px;
-  text-decoration:none;
-  color:#fff;
-  transition:.3s;
-}
-.card:hover {
-  transform:scale(1.05);
-  background:rgba(255,255,255,.2);
-}
-.card img {
-  width:48px; height:48px;
-  border-radius:50%;
-  margin-right:15px;
-}
-.card h3 { font-size:18px; margin-bottom:4px; }
-.card p { font-size:14px; opacity:.8; }
 
 /* ===== 底部信息 ===== */
 .footer-info {
@@ -185,7 +193,7 @@ body {
     </div>
   </div>
 
-  <!-- 2. Tab 栏（无边框） -->
+  <!-- 2. Tab 栏 -->
   <div class="tab-bar" id="tab-bar"></div>
 
   <!-- 3. 内容区域 -->
@@ -223,7 +231,7 @@ fetch('./data.json')
     const contentContainer = document.getElementById('content-container');
 
     categories.forEach((cat, index) => {
-      // 1. 创建 Tab 按钮（无边框）
+      // 1. 创建 Tab 按钮
       const tab = document.createElement('div');
       tab.className = 'tab-item';
       if (index === 0) tab.classList.add('active');
@@ -237,33 +245,51 @@ fetch('./data.json')
       area.id = `content-${index}`;
       if (index === 0) area.classList.add('active');
 
-      // 文档
+      // 3. 创建混合容器
+      const mixedContainer = document.createElement('div');
+      mixedContainer.className = 'mixed-container';
+
+      // 4. 情况 A：分类直接是文档（只有 file）
       if (cat.file) {
-        area.innerHTML = `<div class="doc-content" id="doc-${index}">加载中...</div>`;
-        contentContainer.appendChild(area);
+        const docDiv = document.createElement('div');
+        docDiv.className = 'doc-content';
+        docDiv.id = `doc-${index}`;
+        docDiv.innerHTML = '<p>加载中...</p>';
+        mixedContainer.appendChild(docDiv);
         loadDoc(`doc-${index}`, cat.file);
       }
-      // 项目卡片
+      // 5. 情况 B：分类下有 items（混合链接和文档）
       else if (cat.items) {
-        const wrap = document.createElement('div');
-        wrap.className = 'links';
-        cat.items.forEach(link => {
-          const card = document.createElement('a');
-          card.className = 'card';
-          card.href = link.url;
-          card.target = '_blank';
-          card.innerHTML = `
-            <img src="${link.icon}" alt="${link.title}">
-            <div>
-              <h3>${link.title}</h3>
-              <p>${link.desc}</p>
-            </div>
-          `;
-          wrap.appendChild(card);
+        cat.items.forEach(item => {
+          // 链接卡片
+          if (item.type === 'link') {
+            const card = document.createElement('a');
+            card.className = 'card';
+            card.href = item.url;
+            card.target = '_blank';
+            card.innerHTML = `
+              <img src="${item.icon}" alt="${item.title}">
+              <div>
+                <h3>${item.title}</h3>
+                <p>${item.desc}</p>
+              </div>
+            `;
+            mixedContainer.appendChild(card);
+          }
+          // 文档
+          else if (item.type === 'markdown') {
+            const docDiv = document.createElement('div');
+            docDiv.className = 'doc-content';
+            docDiv.id = `doc-${cat.category}-${item.title}`;
+            docDiv.innerHTML = '<p>加载中...</p>';
+            mixedContainer.appendChild(docDiv);
+            loadDoc(`doc-${cat.category}-${item.title}`, item.file);
+          }
         });
-        area.appendChild(wrap);
-        contentContainer.appendChild(area);
       }
+
+      area.appendChild(mixedContainer);
+      contentContainer.appendChild(area);
     });
   });
 
